@@ -55,12 +55,13 @@ function goSearch () {
   // 模板字符串传参,不需要加上前面的路径了
   // router.push({ path: `${keyword.value}?k=${keyword.value}` })
   // 传递对象
-  const result = router.push({
+  router.replace({
     name: 'search',
     params: { keyword: keyword.value },
     query: { k: keyword.value.toUpperCase() }
-  }, () => {},  () => {})
-  // console.log(result)
+  }).catch(err=>{
+    console.log(err)
+  })
 
   /* console.log(router.currentRoute.value.fullPath)
   console.log(keyword.value) */
