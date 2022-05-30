@@ -1,21 +1,17 @@
-import homeindex from '@/pages/Home/index.vue'
-import loginindex from '@/pages/Login/index.vue'
-import searchindex from '@/pages/Search/index.vue'
-import registerindex from '@/pages/Register/index.vue'
 import { RouteRecordRaw } from 'vue-router'
 // 配置路由
 const routes: Array<RouteRecordRaw> = [
   // 首页路由
   {
     path: '/home',
-    component: homeindex,
+    component: ()=>import('@/pages/Home/index.vue'),
     meta: { show: true }
   },
   // 搜索路由
   {
     // 指定参数可传可不传，则在这个参数后面加个?
     path: '/search/:keyword?',
-    component: searchindex,
+    component: ()=>import('@/pages/Search/index.vue'),
     meta: { show: true },
     name: 'search'
     // 路由组件传递props数据，布尔值写法:params(只能传递这个)
@@ -36,13 +32,13 @@ const routes: Array<RouteRecordRaw> = [
   // 登录路由
   {
     path: '/login',
-    component: loginindex,
+    component: ()=>import('@/pages/Login/index.vue'),
     meta: { show: false }
   },
   // 注册路由
   {
     path: '/register',
-    component: registerindex,
+    component: ()=>import('@/pages/Register/index.vue'),
     meta: { show: false }
   },
   // 重定向到首页

@@ -12,6 +12,8 @@
     "useDefineForClassFields": true,
     "sourceMap": true,
     "baseUrl": ".",
+    //可以允许引入js
+    "allowJs": true,
     "types": [
       "webpack-env"
     ],
