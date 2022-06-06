@@ -17,6 +17,9 @@
 import HeaderIndex from '@/components/Header/header-index.vue'
 import FooterIndex from '@/components/Footer/footer-index.vue'
 import router from '@/router'
+import { onMounted } from 'vue'
+import { useStore } from 'vuex'
+
 // const props = props[]
 
 // interface Idata {
@@ -33,6 +36,14 @@ import router from '@/router'
 function getFlag () {
   return (router.currentRoute.value.fullPath === '/home' || router.currentRoute.value.fullPath === '/search')
 }
+
+// 挂载的时候
+onMounted(()=>{
+  //实例化一个store对象
+  const store = useStore()
+  //发请求，将数据存储到仓库中  这个放在根组件中，这个请求只发一次 优化的
+  store.dispatch('CategoryList')
+})
 </script>
 <style>
 </style>

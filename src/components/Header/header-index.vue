@@ -32,7 +32,7 @@
           <img src="./images/logo.png" alt="">
         </router-link>
       </h1>
-      <div class="searchArea">
+      <div class="searchArea animate__animated  animate__fadeIn animate__delay-1s">
         <form action="###" class="searchForm">
           <input type="text" id="autocomplete" class="input-error input-xxlarge" v-model="keyword"/>
           <!-- 有业务逻辑处理，使用编程式导航 -->
@@ -43,8 +43,11 @@
   </header>
 </template>
 <script setup lang="ts">
-import router from '@/router'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+//实例化一个路由，然后获取路由信息
+const router = useRouter()
 
 const keyword = ref('')
 const k = ref('')
@@ -55,11 +58,15 @@ function goSearch () {
   // 模板字符串传参,不需要加上前面的路径了
   // router.push({ path: `${keyword.value}?k=${keyword.value}` })
   // 传递对象
-  router.replace({
+  //有push和replace
+  let location = {
     name: 'search',
-    params: { keyword: keyword.value },
-    query: { k: keyword.value.toUpperCase() }
-  }).catch(err=>{
+    // 将点击的query 内容也传递过来
+    params: { keyword: keyword.value || undefined },
+    query:router.currentRoute.value.query
+  }
+  // location.query=router.currentRoute.value.query;
+  router.replace(location).catch(err => {
     console.log(err)
   })
 

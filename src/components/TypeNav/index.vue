@@ -2,23 +2,37 @@
   <!-- 商品分类导航 -->
   <div class="type-nav">
     <div class="container">
-      <div @mouseleave="setIndex" :class="{specialcur:true}">
+      <!--  事件委派||事件代理 -->
+      <div @mouseleave="leaveShow" :class="{specialcur:true}" @mouseenter="enterShow">
         <h2 class="all">全部商品分类</h2>
-        <div class="sort">
-          <div class="all-sort-list2">
+        <!-- 三级联动分类     -->
+        <!--        <transition :enter-active-class="
+        " :leave-active-class="leaveClass">-->
+        <!--          name="custom-classes-transition"-->
+        <!--          enter-active-class="animated bounceInDown"-->
+        <!--          leave-active-class="animated bounceInDown"-->
+
+        <div class="sort" v-show="show">
+          <!--  使用事件委派，父类传递给子类 -->
+          <div class="all-sort-list2" @click="goSearch">
             <div class="item" v-for="(c1,index) in categoryList" :key="c1.categoryId">
               <h3 @mouseenter="ChangeIndex(index)" :class="{cur:index==Currentindex}">
-                <a href="">{{ c1.categoryName }}</a>
+                <a href="javascript:" :data-categoryName="c1.categoryName" :data-category1Id="c1.categoryId"
+                   class="animate__animated  animate__fadeInDown">{{ c1.categoryName }}</a>
               </h3>
+              <!-- 二级三级分类    -->
               <div class="item-list clearfix">
-                <div class="subitem" v-for="(c2,index) in c1.categoryChild" :key="c2.categoryChild">
+                <div class="subitem animate__animated  animate__fadeInDown" v-for="(c2,index) in c1.categoryChild"
+                     :key="c2.categoryChild">
                   <dl class="fore">
                     <dt>
-                      <a href="">{{ c2.categoryName }}</a>
+                      <a href="javascript:" :data-categoryName="c2.categoryName"
+                         :data-category2Id="c2.categoryId">{{ c2.categoryName }}</a>
                     </dt>
                     <dd>
                       <em v-for="(c3,index) in c2.categoryChild" :key="c3.categoryChild">
-                        <a href="">{{ c3.categoryName }}</a>
+                        <a href="javascript:" :data-categoryName="c3.categoryName"
+                           :data-category3Id="c3.categoryId">{{ c3.categoryName }}</a>
                       </em>
                     </dd>
                   </dl>
@@ -27,6 +41,8 @@
             </div>
           </div>
         </div>
+        <!--        </transition>-->
+
       </div>
       <nav class="nav">
         <a href="###">服装城</a>
@@ -46,31 +62,83 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
+import { throttle } from 'lodash'
+import Router from '@/router'
+import { useRouter } from 'vue-router'
+
+//组件的显示标志
+const show = ref(true)
+//实例化一个路由，然后获取路由信息
+const router = useRouter()
+
 //实例化一个store对象
 const store = useStore()
 const categoryList = computed(() => store.state.home.categoryList)
 onMounted(() => {
-    store.dispatch('CategoryList')
+
+    //装载以后可以使得它隐藏
+    if (router.currentRoute.value.path != '/home') {
+      show.value = false
+    }
   }
 )
-// function ChangeIndex(){
-// }
+
+//鼠标移入 使得列表内容出现
+function enterShow () {
+  if (router.currentRoute.value.path != '/home') {
+    show.value = true
+  }
+}
+
+//这个用来判断操作鼠标移上去的标志
 const Currentindex = ref(-1)
-
-function ChangeIndex (value: any) {
+const ChangeIndex = throttle(function (value: any) {
   Currentindex.value = value
-}
-function setIndex(){
-  Currentindex.value=-1
+}, 50)
+
+function leaveShow () {
+  Currentindex.value = -1
+  if (router.currentRoute.value.path !== '/home') {
+    show.value = false
+  }
 }
 
+//点击搜索
+function goSearch (event: any) {
+  // console.log(event.target)let
+  let {
+    categoryname,
+    category1id,
+    category2id,
+    category3id
+  } = event.target.dataset
+  if (categoryname) {
+    let location: any = { name: 'search' }
+    let query: any = { categoryname: categoryname }
+    if (category1id) {
+      query.category1Id = category1id
+    } else if (category2id) {
+      query.category1Id = category2id
+    } else if (category3id) {
+      query.category1Id = category2id
+    }
+    // 需要把 parms参数也带进去
+    //获取路由参数 是通过 router.currentRoute.value.params
+    // console.log(router.currentRoute.value.params)
+    // 将搜索框中的参数 也一并传递过去
+    location.params=router.currentRoute.value.params;
+
+    //合并对象
+    location.query = query
+    Router.push(location)
+  }
+}
 </script>
 <script lang="ts">
 export default {
-  name: 'Typenav'
+  name: 'typenav'
 }
 </script>
-
 
 <style scoped lang="less">
 .type-nav {
@@ -132,9 +200,11 @@ export default {
               color: #333;
             }
           }
+
           .cur {
             background-color: skyblue;
           }
+
           .item-list {
             display: none;
             position: absolute;
@@ -195,7 +265,6 @@ export default {
             }
           }
         }
-
         //样式解决 很简单 .item:hover {background-color: skyblue}
 
       }

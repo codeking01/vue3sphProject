@@ -7,8 +7,13 @@ import store from '@/store'
 import { reqCategoryList } from '@/api/'
 reqCategoryList(); */
 
+import animated from '@/plugins/jsPlugins/animated'
+// 引入MockServe.js mock数据
+import  '@/mock/Mymockserve.js'
+
 const app = createApp(App)
 app.component('TypeNav', TypeNav)
 app.use(router)
 app.use(store)
+app.use(animated)
 app.mount('#app')

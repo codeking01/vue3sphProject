@@ -6,7 +6,8 @@
         <!--banner轮播-->
         <div class="swiper-container" id="mySwiper">
           <div class="swiper-wrapper">
-            <div class="swiper-slide">
+            <div class="swiper-slide animate__animated  animate__backInUp"  >
+<!--              <img src="./images/banner1.jpg"/>-->
               <img src="./images/banner1.jpg"/>
             </div>
 <!--            <div class="swiper-slide">
@@ -110,7 +111,22 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+
+import { computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
+//实例化一个store对象
+const store = useStore()
+const bannerList = computed(() => store.state.home.bannerList)
+onMounted(() => {
+
+  //发请求，将数据存储到仓库中  这个放在根组件中，这个请求只发一次 优化的
+  store.dispatch('getBannerList')
+})
+
+</script>
+
+<script lang="ts">
 export default {
   name: 'index'
 }

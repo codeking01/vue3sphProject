@@ -35,10 +35,6 @@ import Rankindex from './Rank/index.vue'
 import Likeindex from './Like/index.vue'
 import Floorindex from './Floor/index.vue'
 import Brandindex from './Brand/index.vue'
-import { useStore } from 'vuex'
-import { computed } from 'vue'
-
-
 
 //实例化一个store
 // const store = useStore()
