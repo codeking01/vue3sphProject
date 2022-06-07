@@ -106,6 +106,7 @@ function leaveShow () {
 //点击搜索
 function goSearch (event: any) {
   // console.log(event.target)let
+  //event.target.dataset 取出来的数据 前面的命名必须规范写成 :data-XXX
   let {
     categoryname,
     category1id,

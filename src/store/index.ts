@@ -34,10 +34,11 @@ const getters = {
 */
 
 
-export default createStore({
+const store :any= createStore({
     //实现vuex参考模块式开发
    modules:{
     home,
     search
   }
 })
+export default store

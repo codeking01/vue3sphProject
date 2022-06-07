@@ -3,6 +3,9 @@ import App from './App.vue'
 import router from '@/router/index'
 import TypeNav from '@/components/TypeNav/index.vue'
 import store from '@/store'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+
 /* //测试接口引入
 import { reqCategoryList } from '@/api/'
 reqCategoryList(); */
@@ -16,4 +19,5 @@ app.component('TypeNav', TypeNav)
 app.use(router)
 app.use(store)
 app.use(animated)
+app.use(ElementPlus)
 app.mount('#app')

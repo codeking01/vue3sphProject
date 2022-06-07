@@ -13,28 +13,38 @@
     <TypeNav/>
     <!--    引入其余组件-->
     <!-- 可以用 :is去动态引入组件   -->
-    <!--    <ListContainer/>-->
+<!--    <ListContainer/>-->
     <component :is="ListContainer"/>
     <!--    <Todayrecommend/>-->
-    <component :is="Todayrecommend"/>
+    <component :is="TodayRecommend"/>
     <!--    <Rankindex/>-->
-    <component :is="Rankindex"/>
+    <component :is="RankIndex"/>
     <!--    <Likeindex/>-->
-    <component :is="Likeindex"/>
+    <component :is="LikeIndex"/>
     <!--    <Floorindex/>-->
-    <component :is="Floorindex"/>
+    <component :is="FloorIndex" v-for="(floor,index) in floorList" :key="floor.id" :floor="floor"/>
     <!--    <Brandindex/>-->
-    <component :is="Brandindex"/>
+    <component :is="BrandIndex"/>
   </div>
 </template>
 
 <script setup lang="ts">
 import ListContainer from './ListContainer/index.vue'
-import Todayrecommend from './Recommend/index.vue'
-import Rankindex from './Rank/index.vue'
-import Likeindex from './Like/index.vue'
-import Floorindex from './Floor/index.vue'
-import Brandindex from './Brand/index.vue'
+import TodayRecommend from './Recommend/index.vue'
+import RankIndex from './Rank/index.vue'
+import LikeIndex from './Like/index.vue'
+import FloorIndex from './Floor/index.vue'
+import BrandIndex from './Brand/index.vue'
+//实例化一个store对象
+import { useStore } from 'vuex'
+import { computed, onMounted } from 'vue'
+const store = useStore()
+const floorList = computed(() => store.state.home.floorList)
+// 装载的时候获取请求数据到仓库
+onMounted(() => {
+  //发请求，将数据存储到仓库中  这个放在根组件中，这个请求只发一次 优化的
+  store.dispatch('getFloorList')
+})
 
 //实例化一个store
 // const store = useStore()

@@ -6,19 +6,25 @@
         <!--banner轮播-->
         <div class="swiper-container" id="mySwiper">
           <div class="swiper-wrapper">
-            <div class="swiper-slide animate__animated  animate__backInUp"  >
-<!--              <img src="./images/banner1.jpg"/>-->
-              <img src="./images/banner1.jpg"/>
+            <div class="swiper-slide animate__animated  animate__backInUp">
+              <!--              <img src="./images/banner1.jpg"/>-->
+              <!--  这个位置可以加一个suspend考虑做优化-->
+              <el-carousel :interval="6000" arrow="always" height="455px">
+                <el-carousel-item v-for="(c1,index) in bannerList" :key="c1.id">
+                  <img :src="c1.imgUrl" alt="轮播图信息">
+                  <!--                  <h3 text="2xl" justify="center">{{ c1.imgUrl }}</h3>-->
+                </el-carousel-item>
+              </el-carousel>
             </div>
-<!--            <div class="swiper-slide">
-              <img src="./images/banner2.jpg"/>
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/banner3.jpg"/>
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/banner4.jpg"/>
-            </div>-->
+            <!--            <div class="swiper-slide">
+                          <img src="./images/banner2.jpg"/>
+                        </div>
+                        <div class="swiper-slide">
+                          <img src="./images/banner3.jpg"/>
+                        </div>
+                        <div class="swiper-slide">
+                          <img src="./images/banner4.jpg"/>
+                        </div>-->
           </div>
           <!-- 如果需要分页器 -->
           <div class="swiper-pagination"></div>
@@ -113,17 +119,34 @@
 
 <script setup lang="ts">
 
-import { computed, onMounted } from 'vue'
+import { computed, nextTick, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 //实例化一个store对象
 const store = useStore()
-const bannerList = computed(() => store.state.home.bannerList)
 onMounted(() => {
-
   //发请求，将数据存储到仓库中  这个放在根组件中，这个请求只发一次 优化的
   store.dispatch('getBannerList')
 })
+const bannerList = computed(() => store.state.home.bannerList)
 
+// computed(()=>bannerList)
+// 使用 watch监听属性的变化 这个地方监听 bannerList 下面这个方法并没有执行..
+watch(bannerList, () => {
+  nextTick(() => {
+     //这个位置引入 轮播图数据
+     console.log('bannerList加载成功')
+  })
+},{immediate: true,deep: true})
+
+/* watch(
+  () =>bannerList,
+  () => {
+     nextTick(()=>{
+       console.log('bannerList加载成功')
+    })
+    /!* ... *!/
+  }
+) */
 </script>
 
 <script lang="ts">
@@ -133,6 +156,22 @@ export default {
 </script>
 
 <style scoped lang="less">
+.el-carousel__item img {
+  color: #475669;
+  opacity: 0.75;
+  line-height: 300px;
+  margin: 0;
+  text-align: center;
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
+}
+
 .list-container {
   width: 1200px;
   margin: 0 auto;

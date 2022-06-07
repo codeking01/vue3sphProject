@@ -12,8 +12,16 @@ export const reqCategoryList = () =>
     method: 'get'
   })
 
+// 轮播图请求
 export const reqGetBannerList = () =>
   mockRequest({
     url: '/banner',
+    method: 'get'
+  })
+
+//底部轮播图请求
+export const reqGetFloorList = () =>
+  mockRequest({
+    url: '/floor',
     method: 'get'
   })
