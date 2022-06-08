@@ -44,7 +44,9 @@ const actions :any = {
     }
   }
 }
-const getters :any= {}
+const getters :any= {
+
+}
 
 export default {
   state,

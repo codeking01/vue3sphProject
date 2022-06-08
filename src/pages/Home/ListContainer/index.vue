@@ -120,7 +120,7 @@
 <script setup lang="ts">
 
 import { computed, nextTick, onMounted, watch } from 'vue'
-import { useStore } from 'vuex'
+import { mapGetters, mapState, useStore } from 'vuex'
 //实例化一个store对象
 const store = useStore()
 onMounted(() => {
@@ -128,6 +128,7 @@ onMounted(() => {
   store.dispatch('getBannerList')
 })
 const bannerList = computed(() => store.state.home.bannerList)
+
 
 // computed(()=>bannerList)
 // 使用 watch监听属性的变化 这个地方监听 bannerList 下面这个方法并没有执行..

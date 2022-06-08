@@ -9,10 +9,9 @@ import 'element-plus/dist/index.css'
 /* //测试接口引入
 import { reqCategoryList } from '@/api/'
 reqCategoryList(); */
-
 import animated from '@/plugins/jsPlugins/animated'
 // 引入MockServe.js mock数据
-import  '@/mock/Mymockserve.js'
+import '@/mock/Mymockserve.js'
 
 const app = createApp(App)
 app.component('TypeNav', TypeNav)
