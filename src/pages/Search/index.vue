@@ -50,7 +50,7 @@
           </div>
           <div class="goods-list">
             <ul class="yui3-g">
-              <li class="yui3-u-1-5"  v-for="(good, index) in goodsList" :key="good.id">
+              <li class="yui3-u-1-5" v-for="(good, index) in goodsList" :key="good.id">
                 <div class="list-wrap">
                   <div class="p-img">
                     <a href="item.html" target="_blank"><img :src="good.defaultImg"/></a>
@@ -124,9 +124,10 @@ import { computed, nextTick, onBeforeMount, onMounted, reactive, ref, watch } fr
 
 const store = useStore()
 //钩子函数:beforeCreate、created、beforeMount.执行都是在mounted之前
-//整理参数不能在：beforeCreate因为不能获取VC属性、方法
+//整理参数不能在：beforeCreate因为不能获取VC属性、方法(vue2的写法) vue3.2以后setup先执行
 onBeforeMount(() => {
-  // 合并替换这些参数
+  // console.log(searchParams)
+  // 合并对象 合并替换这些参数
   Object.assign(searchParams, query, params)
 })
 
@@ -138,10 +139,30 @@ onMounted(() => {
   //获取用户信息
 })
 // 从路由中获取查询的参数
-let params = router.currentRoute.value.params
-let query = router.currentRoute.value.query
+let params = ref(router.currentRoute.value.params)
+let query = ref(router.currentRoute.value.query)
 // 这个 searchParams 是记录 点击搜索页面的各个参数
-let searchParams = ref({})
+let searchParams = reactive({
+//带给服务器的数据
+// 一、二、三级分类的id
+  category1Id: '',
+  category2Id: '',
+  category3Id: '',
+  // 分类的名字
+  categoryName: '',
+  // 关键字
+  keyword: '',
+  //平台售卖属性操作带的参数
+  props: [],
+  //商品 评分
+  trademark: '',
+  // 排序
+  order: '',
+  // 页面
+  pageNo: 1,
+  // 每一页展示数据的个数
+  pageSize: 10
+})
 
 /* import { defineProps } from 'vue'
 defineProps({
@@ -153,16 +174,28 @@ function getData () {
   //通知Vuex发请求、仓库存储数据
   store.dispatch('getSearchList', searchParams)
 }
-// 这个地方需要使用 computed获取数据
-const goodsList=computed(()=>store.state.search.searchList.goodsList)
 
+// 这个地方需要使用 computed获取数据
+const goodsList = computed(() => store.state.search.searchList.goodsList)
 
 const searchList = computed(() => store.state.search.searchList)
-watch(searchList, () => {
-  nextTick(()=>{
-    // 监听到变化的时候，传输数值
-  })
 
+watch(router.currentRoute, (newvalue) => {
+  // console.log(router.currentRoute.value)
+  // 当路由的参数发生变化，再次进行合并参数
+  Object.assign(searchParams, newvalue.query, newvalue.params)
+  console.log(searchParams)
+  console.log(newvalue.query)
+  // 再次发请求
+  getData()
+  // 置空id
+  searchParams.category1Id='';
+  searchParams.category2Id='';
+  searchParams.category3Id='';
+
+  /* nextTick(() => {
+    // 监听到变化的时候，传输数值
+  }) */
 })
 
 </script>

@@ -110,7 +110,7 @@
           </li>
         </ul>
         <div class="ads">
-          <img src="./images/ad1.png"/>
+          <img src="./images/ad1.png" alt=""/>
         </div>
       </div>
     </div>
@@ -120,7 +120,7 @@
 <script setup lang="ts">
 
 import { computed, nextTick, onMounted, watch } from 'vue'
-import { mapGetters, mapState, useStore } from 'vuex'
+import { useStore } from 'vuex'
 //实例化一个store对象
 const store = useStore()
 onMounted(() => {
@@ -135,9 +135,10 @@ const bannerList = computed(() => store.state.home.bannerList)
 watch(bannerList, () => {
   nextTick(() => {
      //这个位置引入 轮播图数据
-     console.log('bannerList加载成功')
+     // console.log('bannerList加载成功')
   })
-},{immediate: true,deep: true})
+})
+// },{immediate: true,deep: true})
 
 /* watch(
   () =>bannerList,

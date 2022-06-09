@@ -26,7 +26,6 @@ export const reqSearchList = (data: any)=>
     console.log(error)
   })
 
-
 // 轮播图请求 函数式写法
 export const reqGetBannerList = () => mockRequest.get('/banner')
 
