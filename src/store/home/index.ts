@@ -10,15 +10,16 @@ const state:any = {
   floorList:[],
 }
 const mutations :any = {
-  CATEGORYLIST (categoryList: any) {
+  CATEGORYLIST (state:any,categoryList: any) {
     //删除第17个元素。 value的第一个参数是从哪个位置开始，第二个是代表删除几个
     categoryList.splice(16,1)
+    // console.log(categoryList)
     state.categoryList = categoryList
   },
-  BANNERLIST(bannerList:any){
+  BANNERLIST(state:any,bannerList:any){
     state.bannerList = bannerList
   },
-  FLOORLIST(floorList:any){
+  FLOORLIST(state:any,floorList:any){
     state.floorList =floorList
   }
 }
@@ -26,6 +27,7 @@ const actions :any = {
   async CategoryList ({ commit }: any) {
     //reqCategoryList() 调用的是事先写好的接口0
     let result: any = await reqCategoryList()
+    // console.log(result.data)
     if (result.code === 200) {
       commit('CATEGORYLIST', result.data)
     }
@@ -33,6 +35,7 @@ const actions :any = {
   async getBannerList({ commit }: any){
     let result: any = await reqGetBannerList()
     // console.log(result.data)
+    // console.log(typeof(result.data))
     if(result.code === 200) {
       commit('BANNERLIST', result.data)
     }

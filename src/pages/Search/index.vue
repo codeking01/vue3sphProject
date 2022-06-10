@@ -145,9 +145,9 @@ let query = ref(router.currentRoute.value.query)
 let searchParams = reactive({
 //带给服务器的数据
 // 一、二、三级分类的id
-  category1Id: '',
-  category2Id: '',
-  category3Id: '',
+  category1Id: undefined,
+  category2Id: undefined,
+  category3Id: undefined,
   // 分类的名字
   categoryName: '',
   // 关键字

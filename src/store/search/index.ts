@@ -13,7 +13,7 @@ const actions = {
   async getSearchList({commit}:any,searchParams:any){
     let result:any = await reqSearchList(searchParams)
     // console.log(result)
-    if(result.code == 200) {
+    if(result.code === 200) {
       // 将result.data 传递给仓库 state.searchList
       commit('GETSEARCHLIST', result.data);
     }
