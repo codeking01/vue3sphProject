@@ -176,15 +176,14 @@ const attrsList = computed(() => store.state.search.searchList.attrsList)
 const trademarkList = computed(() => store.state.search.searchList.trademarkList)
 
 // 将子组件点击的内容传给父组件
-const emit = defineEmits(['trademarkList'])
-const emitAttr = defineEmits(['AttrInfo'])
+const emit = defineEmits(['trademarkList','AttrInfo'])
 function TrademarkHandle (value: any) {
   emit('trademarkList', value)
 }
 
 // 组件通信
 function attrInfo (attr:any,attrValue: any) {
-  emitAttr('AttrInfo',attr,attrValue)
+  emit('AttrInfo',attr,attrValue)
 }
 </script>
 
