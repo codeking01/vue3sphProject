@@ -5,11 +5,19 @@
       <div class="value logos">
         <!-- 品牌的位置 -->
         <ul class="logo-list">
-          <li v-for="(trademark,index) in trademarkList" :key="trademark.tmId">{{ trademark.tmName }}</li>
-          <!--          <li>TCL</li>
-                    <li>长虹（CHANGHONG）</li>
-                    <li>飞利浦（PHILIPS）</li>
-                    <li>风行电视</li>-->
+          <!-- 点击了以后会把属性传递给父组件-->
+          <li v-for="(trademark,index) in trademarkList" :key="trademark.tmId" @click="TrademarkHandle(trademark)">
+            {{ trademark.tmName }}
+          </li>
+          <!-- 暂时用假数据展示-->
+          <li @click="TrademarkHandle({tmId:'1',tmName:'TCL'})">TCL</li>
+          <li @click="TrademarkHandle({tmId:'2',tmName:'长虹'})">长虹(CHANGHONG</li>
+          <li @click="TrademarkHandle({tmId:'3',tmName:'飞利浦'})">飞利浦(PHILIPS）</li>
+          <li @click="TrademarkHandle({tmId:'4',tmName:'长虹'})">长虹(CHANGHONG)</li>
+          <!--            <li>长虹（CHANGHONG）</li>
+                      <li>飞利浦（PHILIPS）</li>
+                      <li>风行电视</li>-->
+
           <!--          <li><img src="./images/phone06.png"/></li>
                     <li><img src="./images/phone07.png"/></li>
                     <li><img src="./images/phone08.png"/></li>
@@ -35,10 +43,10 @@
       <div class="fl key">{{ attr.attrName }}</div>
       <div class="fl value">
         <ul class="type-list">
-          <li v-for="(attrValue,index) in attr.attrValueList" :key="index">
-            <a>{{ attrValue }}</a>
+          <li v-for="(attrValue,index) in attr.attrValueList" :key="index" >
+            <a @click="attrInfo(attr,attrValue)">{{ attrValue }}</a>
           </li>
-          <!--          <li>
+          <!--      <li>
                       <a>电信2G</a>
                     </li>
                     <li>
@@ -166,6 +174,18 @@ import { computed } from 'vue'
 const store = useStore()
 const attrsList = computed(() => store.state.search.searchList.attrsList)
 const trademarkList = computed(() => store.state.search.searchList.trademarkList)
+
+// 将子组件点击的内容传给父组件
+const emit = defineEmits(['trademarkList'])
+const emitAttr = defineEmits(['AttrInfo'])
+function TrademarkHandle (value: any) {
+  emit('trademarkList', value)
+}
+
+// 组件通信
+function attrInfo (attr:any,attrValue: any) {
+  emitAttr('AttrInfo',attr,attrValue)
+}
 </script>
 
 <script lang="ts">

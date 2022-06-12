@@ -11,16 +11,35 @@
               <a href="#">全部结果</a>
             </li>
           </ul>
+          <!--  面包屑的位置-->
           <ul class="fl sui-tag">
-            <li class="with-x">手机</li>
-            <li class="with-x">iphone<i>×</i></li>
-            <li class="with-x">华为<i>×</i></li>
-            <li class="with-x">OPPO<i>×</i></li>
+            <!--            <li class="with-x">手机</li>-->
+            <!--  导航列表点击内容 -->
+            <li class="with-x" v-if="searchParams.categoryName">{{ searchParams.categoryName }}
+              <em @click="removeCategoryName"> ×</em>
+            </li>
+            <!--  搜索框的内容-->
+            <li class="with-x" v-if="searchParams.keyword">{{ searchParams.keyword }}
+              <em @click="removeKeyword"> ×</em>
+            </li>
+            <!-- 品牌信息展示  -->
+            <li class="with-x" v-if="searchParams.trademark">{{ searchParams.trademark.split(':')[1] }}
+              <em @click="removeTrademark"> ×</em>
+            </li>
+            <!-- 商品属性值面包屑的地方 -->
+            <li class="with-x" v-for="(attrValue, index) in searchParams.props" :key="index">
+              <!-- 将选中的属性内容展示 -->
+              {{ attrValue.split(':')[1] }}
+              <em @click="removeAttr(index)"> ×</em>
+            </li>
+
+            <!--            <li class="with-x">华为<i>×</i></li>
+                        <li class="with-x">OPPO<i>×</i></li>-->
           </ul>
         </div>
 
-        <!--selector-->
-        <SearchSelector/>
+        <!--selector  这个是子组件 点击搜索或者导航栏的内容会跳转 -->
+        <SearchSelector @trademarkList="trademarkInfo" @AttrInfo="GetattrInfo"/>
 
         <!--details-->
         <div class="details clearfix">
@@ -119,10 +138,21 @@
 <script setup lang="ts">
 import SearchSelector from './SearchSelector/SearchSelector.vue'
 import { useStore } from 'vuex'
-import router from '@/router'
-import { computed, nextTick, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeMount,
+  onMounted,
+  reactive,
+  ref,
+  watch
+} from 'vue'
+import { useRouter } from 'vue-router'
+import Mymitt from '@/plugins/jsPlugins/mymitt.js'
 
 const store = useStore()
+// 实例化一个路由
+const Router = useRouter()
 //钩子函数:beforeCreate、created、beforeMount.执行都是在mounted之前
 //整理参数不能在：beforeCreate因为不能获取VC属性、方法(vue2的写法) vue3.2以后setup先执行
 onBeforeMount(() => {
@@ -139,21 +169,23 @@ onMounted(() => {
   //获取用户信息
 })
 // 从路由中获取查询的参数
-let params = ref(router.currentRoute.value.params)
-let query = ref(router.currentRoute.value.query)
-// 这个 searchParams 是记录 点击搜索页面的各个参数
-let searchParams = reactive({
+let params = ref(Router.currentRoute.value.params)
+let query = ref(Router.currentRoute.value.query)
+// 这个 searchParams 是记录 点击搜索页面的各个参数 应该换成reactive更好
+// ts 的数组必须抽离出来
+let MyProps: any[] = []
+let searchParams = ref({
 //带给服务器的数据
 // 一、二、三级分类的id
-  category1Id: undefined,
-  category2Id: undefined,
-  category3Id: undefined,
+  category1Id: '',
+  category2Id: '',
+  category3Id: '',
   // 分类的名字
   categoryName: '',
   // 关键字
   keyword: '',
   //平台售卖属性操作带的参数
-  props: [],
+  props: MyProps,
   //商品 评分
   trademark: '',
   // 排序
@@ -169,36 +201,117 @@ defineProps({
   keyword: String || Number,
   query: String || Number
 }) */
-
+//发送请求
 function getData () {
   //通知Vuex发请求、仓库存储数据
-  store.dispatch('getSearchList', searchParams)
+  store.dispatch('getSearchList', searchParams.value)
+}
+
+// 删除导航点击的query
+function removeCategoryName () {
+  // 删除名字  设置undefined 可以 使得参数传递不过去
+  searchParams.value.categoryName = ''
+  searchParams.value.category1Id = ''
+  searchParams.value.category2Id = ''
+  searchParams.value.category3Id = ''
+  // 再次发请求 监听路由会发送请求 所以在这个地方可以不发
+  // getData()
+
+  // console.log(query)
+  // Object.assign(searchParams, query, params)
+  // 修改路由的信息
+  // let location: any = { name: 'search' }
+  //合并对象
+  // location.params =params
+  // console.log(params)
+  // console.log('参数',location)
+  // Router.push(location)
+  Router.push({
+    name: 'search',
+    params: Router.currentRoute.value.params
+  })
+}
+
+// 删除关键字
+function removeKeyword () {
+  // 删除名字  设置undefined 可以 使得参数传递不过去
+  searchParams.value.keyword = ''
+  // 再次发请求
+  // getData()
+
+  // 重新跳转路由
+  // let location: any = { name: 'search' }
+  //合并对象
+  // location.query =query
+  // console.log('参数',location)
+  Router.push({
+    name: 'search',
+    query: Router.currentRoute.value.query
+  })
+  // 移除搜索框的内容 mitt用上 替代之前的。 Vue3中已经没有了EventBus跨组件通信，替代方案mitt.js，但原理方式EventBus是一样的
+  Mymitt.emit('clearKeyword')
+
 }
 
 // 这个地方需要使用 computed获取数据
 const goodsList = computed(() => store.state.search.searchList.goodsList)
-
-const searchList = computed(() => store.state.search.searchList)
-
-watch(router.currentRoute, (newvalue) => {
+// const searchList = computed(() => store.state.search.searchList)
+// 监听路由
+watch(Router.currentRoute, (newValue) => {
   // console.log(router.currentRoute.value)
   // 当路由的参数发生变化，再次进行合并参数
-  Object.assign(searchParams, newvalue.query, newvalue.params)
-  console.log(searchParams)
-  console.log(newvalue.query)
+  Object.assign(searchParams.value, newValue.query, newValue.params)
+  // console.log('ss',query)
+  // console.log(searchParams)
+  // console.log('newValue:',newValue.query)
   // 再次发请求
   getData()
   // 置空id
-  searchParams.category1Id='';
-  searchParams.category2Id='';
-  searchParams.category3Id='';
+  searchParams.value.category1Id = ''
+  searchParams.value.category2Id = ''
+  searchParams.value.category3Id = ''
 
   /* nextTick(() => {
     // 监听到变化的时候，传输数值
   }) */
 })
 
+// 接收子组件商品 的内容
+function trademarkInfo (trademark: any) {
+  // 将接受的内容传递给面包屑 这个地方需要使用模板字符串
+  searchParams.value.trademark = `${trademark.tmId}:${trademark.tmName}`
+  // console.log(trademark)
+  // 再次发请求 获取search模块数据展示
+  getData()
+}
+
+// 置空品牌信息
+function removeTrademark () {
+  searchParams.value.trademark = ''
+  getData()
+}
+
+// 处理子组件传来的商品信息
+function GetattrInfo (attr: any, attrValue: any) {
+  // 先用一个数组接收
+  let newProps: any = `${attr.attrId}:${attrValue}:${attr.attrName}`
+  // 先判断一下这个数据是否被选中过
+  if (searchParams.value.props.includes(newProps)) {
+    searchParams.value.props.push(newProps)
+    //再次发请求，获取最新的数据展示即可
+    getData()
+  }
+}
+
+//商品属性值面包屑删除回调
+function removeAttr(index:any){
+ searchParams.value.props.splice(index, 1);
+  //在发一次请求
+  getData();
+}
+
 </script>
+<script lang="ts"></script>
 
 <style lang="less" scoped>
 .main {

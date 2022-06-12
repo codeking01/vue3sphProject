@@ -43,9 +43,17 @@
   </header>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import Mymitt from '@/plugins/jsPlugins/mymitt.js'
 
+onMounted(() => {
+  // 清除关键字
+  const clear = () => {
+    keyword.value='';
+  }
+  Mymitt.on('clearKeyword',clear)
+})
 //实例化一个路由，然后获取路由信息
 const router = useRouter()
 

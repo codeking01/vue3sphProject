@@ -19,4 +19,6 @@ app.use(router)
 app.use(store)
 app.use(animated)
 app.use(ElementPlus)
+// 加入全局变量中
+
 app.mount('#app')

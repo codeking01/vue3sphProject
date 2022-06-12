@@ -17,6 +17,8 @@ const actions = {
       // 将result.data 传递给仓库 state.searchList
       commit('GETSEARCHLIST', result.data);
     }
+    //  先让请求传递过去 后期接口好了再删除这个
+    // commit('GETSEARCHLIST', result.data);
   }
 }
 // 用这个会简便获取数据

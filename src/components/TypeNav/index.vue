@@ -115,7 +115,7 @@ function goSearch (event: any) {
   } = event.target.dataset
   if (categoryname) {
     let location: any = { name: 'search' }
-    let query: any = { categoryname: categoryname }
+    let query: any = { categoryName: categoryname }
     if (category1id) {
       query.category1Id = category1id
     } else if (category2id) {
@@ -131,6 +131,7 @@ function goSearch (event: any) {
 
     //合并对象
     location.query = query
+    // console.log(location.query)
     Router.push(location)
   }
 }
