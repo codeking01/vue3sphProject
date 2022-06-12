@@ -10,10 +10,10 @@
             {{ trademark.tmName }}
           </li>
           <!-- 暂时用假数据展示-->
-          <li @click="TrademarkHandle({tmId:'1',tmName:'TCL'})">TCL</li>
+<!--          <li @click="TrademarkHandle({tmId:'1',tmName:'TCL'})">TCL</li>
           <li @click="TrademarkHandle({tmId:'2',tmName:'长虹'})">长虹(CHANGHONG</li>
           <li @click="TrademarkHandle({tmId:'3',tmName:'飞利浦'})">飞利浦(PHILIPS）</li>
-          <li @click="TrademarkHandle({tmId:'4',tmName:'长虹'})">长虹(CHANGHONG)</li>
+          <li @click="TrademarkHandle({tmId:'4',tmName:'长虹'})">长虹(CHANGHONG)</li>-->
           <!--            <li>长虹（CHANGHONG）</li>
                       <li>飞利浦（PHILIPS）</li>
                       <li>风行电视</li>-->

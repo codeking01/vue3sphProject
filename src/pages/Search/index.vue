@@ -46,24 +46,39 @@
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <!--                <el-icon><Top /></el-icon>
+                                <el-icon><Bottom /></el-icon>-->
+                <li :class="{ active: isOne }" @click="sort(1)">
+                  <a>综合
+                    <span v-show="isOne">
+                      <span v-show="isDesc"><el-icon><Bottom/></el-icon></span>
+                      <span v-show="isAsc"><el-icon><Top/></el-icon></span>
+                    </span>
+                  </a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
+                <li :class="{ active: isTwo }" @click="sort(2)">
+                  <a>价格
+                    <span v-show="isTwo">
+                      <span v-show="isDesc"><el-icon><Bottom/></el-icon></span>
+                      <span v-show="isAsc"><el-icon><Top/></el-icon></span>
+                    </span>
+                  </a>
                 </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
-                </li>
+                <!--                <li>
+                                  <a href="#">销量</a>
+                                </li>
+                                <li>
+                                  <a href="#">新品</a>
+                                </li>
+                                <li>
+                                  <a href="#">评价</a>
+                                </li>
+                                <li>
+                                  <a href="#">价格⬆</a>
+                                </li>
+                                <li>
+                                  <a href="#">价格⬇</a>
+                                </li>-->
               </ul>
             </div>
           </div>
@@ -138,15 +153,7 @@
 <script setup lang="ts">
 import SearchSelector from './SearchSelector/SearchSelector.vue'
 import { useStore } from 'vuex'
-import {
-  computed,
-  nextTick,
-  onBeforeMount,
-  onMounted,
-  reactive,
-  ref,
-  watch
-} from 'vue'
+import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Mymitt from '@/plugins/jsPlugins/mymitt.js'
 
@@ -158,13 +165,15 @@ const Router = useRouter()
 onBeforeMount(() => {
   // console.log(searchParams)
   // 合并对象 合并替换这些参数
-  Object.assign(searchParams, query, params)
+  Object.assign(searchParams, query.value, params.value)
+  // console.log(searchParams)
 })
 
 //组件挂载完毕次钩子执行一次,发请求
 onMounted(() => {
   //在发请求之前:整理用户搜索的参数
   //组件挂载完毕发一次请求
+  // console.log(searchParams)
   getData()
   //获取用户信息
 })
@@ -173,28 +182,39 @@ let params = ref(Router.currentRoute.value.params)
 let query = ref(Router.currentRoute.value.query)
 // 这个 searchParams 是记录 点击搜索页面的各个参数 应该换成reactive更好
 // ts 的数组必须抽离出来
-let MyProps: any[] = []
-let searchParams = ref({
+// let MyProps=ref([])
+let MyProps: any = []
+let searchParams = reactive({
 //带给服务器的数据
 // 一、二、三级分类的id
-  category1Id: '',
-  category2Id: '',
-  category3Id: '',
-  // 分类的名字
-  categoryName: '',
-  // 关键字
-  keyword: '',
-  //平台售卖属性操作带的参数
-  props: MyProps,
-  //商品 评分
-  trademark: '',
-  // 排序
-  order: '',
-  // 页面
-  pageNo: 1,
-  // 每一页展示数据的个数
-  pageSize: 10
-})
+    category1Id: '',
+    category2Id: '',
+    category3Id: '',
+    // 分类的名字
+    categoryName: '',
+    // 关键字
+    keyword: '',
+    //平台售卖属性操作带的参数
+    props:MyProps,
+    //商品 评分
+    trademark: '',
+    // 排序
+    order: '1:desc', //排序的参数 【默认初始值:1:desc】
+    // 页面
+    pageNo: 1,
+    // 每一页展示数据的个数
+    pageSize: 10
+  }
+)
+
+// 由于接口数据坏了，这个地方临时加入一个标志来判断升序降序
+/* let tempOrder = ref('1:desc')
+// 查找当前存在的是综合 还是价格
+const isOne = computed(() => {
+  // console.log(searchParams.value.order)
+  // return  searchParams.value.order.includes('1')
+  return tempOrder.value.includes('1')
+}) */
 
 /* import { defineProps } from 'vue'
 defineProps({
@@ -204,16 +224,16 @@ defineProps({
 //发送请求
 function getData () {
   //通知Vuex发请求、仓库存储数据
-  store.dispatch('getSearchList', searchParams.value)
+  store.dispatch('getSearchList', searchParams)
 }
 
 // 删除导航点击的query
 function removeCategoryName () {
   // 删除名字  设置undefined 可以 使得参数传递不过去
-  searchParams.value.categoryName = ''
-  searchParams.value.category1Id = ''
-  searchParams.value.category2Id = ''
-  searchParams.value.category3Id = ''
+  searchParams.categoryName = ''
+  searchParams.category1Id = ''
+  searchParams.category2Id = ''
+  searchParams.category3Id = ''
   // 再次发请求 监听路由会发送请求 所以在这个地方可以不发
   // getData()
 
@@ -235,7 +255,7 @@ function removeCategoryName () {
 // 删除关键字
 function removeKeyword () {
   // 删除名字  设置undefined 可以 使得参数传递不过去
-  searchParams.value.keyword = ''
+  searchParams.keyword = ''
   // 再次发请求
   // getData()
 
@@ -260,16 +280,16 @@ const goodsList = computed(() => store.state.search.searchList.goodsList)
 watch(Router.currentRoute, (newValue) => {
   // console.log(router.currentRoute.value)
   // 当路由的参数发生变化，再次进行合并参数
-  Object.assign(searchParams.value, newValue.query, newValue.params)
+  Object.assign(searchParams, newValue.query, newValue.params)
   // console.log('ss',query)
   // console.log(searchParams)
   // console.log('newValue:',newValue.query)
   // 再次发请求
   getData()
   // 置空id
-  searchParams.value.category1Id = ''
-  searchParams.value.category2Id = ''
-  searchParams.value.category3Id = ''
+  searchParams.category1Id = ''
+  searchParams.category2Id = ''
+  searchParams.category3Id = ''
 
   /* nextTick(() => {
     // 监听到变化的时候，传输数值
@@ -279,7 +299,7 @@ watch(Router.currentRoute, (newValue) => {
 // 接收子组件商品 的内容
 function trademarkInfo (trademark: any) {
   // 将接受的内容传递给面包屑 这个地方需要使用模板字符串
-  searchParams.value.trademark = `${trademark.tmId}:${trademark.tmName}`
+  searchParams.trademark = `${trademark.tmId}:${trademark.tmName}`
   // console.log(trademark)
   // 再次发请求 获取search模块数据展示
   getData()
@@ -287,7 +307,7 @@ function trademarkInfo (trademark: any) {
 
 // 置空品牌信息
 function removeTrademark () {
-  searchParams.value.trademark = ''
+  searchParams.trademark = ''
   getData()
 }
 
@@ -295,19 +315,44 @@ function removeTrademark () {
 function GetattrInfo (attr: any, attrValue: any) {
   // 先用一个数组接收
   let newProps: any = `${attr.attrId}:${attrValue}:${attr.attrName}`
+  // alert(newProps)
+  // console.log(searchParams.MyProps)
+  // alert(searchParams.MyProps)
   // 先判断一下这个数据是否被选中过
-  if (searchParams.value.props.includes(newProps)) {
-    searchParams.value.props.push(newProps)
+  if (!searchParams.props.includes(newProps)) {
+    // alert(22)
+    searchParams.props.push(newProps)
+    console.log(searchParams.props)
     //再次发请求，获取最新的数据展示即可
     getData()
   }
 }
 
 //商品属性值面包屑删除回调
-function removeAttr(index:any){
- searchParams.value.props.splice(index, 1);
+function removeAttr (index: any) {
+  searchParams.props.splice(index, 1)
   //在发一次请求
-  getData();
+  getData()
+}
+
+// 用响应式数据去接收参数
+const isOne = computed(() => searchParams.order.indexOf('1') != -1)
+const isTwo = computed(() => searchParams.order.includes('2'))
+const isDesc = computed(() => searchParams.order.includes('desc'))
+const isAsc = computed(() => searchParams.order.includes('asc'))
+
+// 排序
+function sort (flag: any) {
+  let originSortType = searchParams.order.split(':')[1]
+  searchParams.order = `${flag}:${originSortType == 'desc' ? 'asc' : 'desc'}`
+  console.log(searchParams)
+  /* 临时处理一下 可以看到效果
+  let originSortType = tempOrder.value[0].split(':')[1]
+  点击以后改变原排序
+  重新给order赋予新的数值
+  tempOrder.value = `${flag}:${originSortType == 'desc' ? 'asc' : 'desc'}` */
+  //重新发一次请求
+  getData()
 }
 
 </script>
